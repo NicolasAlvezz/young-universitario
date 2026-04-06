@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@layer base {
+  html { scroll-behavior: smooth; font-size: 100%; }
+  body { font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; background-color: #0a0a0a; color: #FFFFFF; }
+  * { box-sizing: border-box; }
+}
+
+@layer components {
+  .btn-club-red { @apply bg-club-red hover:bg-club-red-dark text-white font-bold py-3 px-8 rounded transition-all duration-300 transform hover:scale-105 uppercase tracking-wider text-sm; }
+  .btn-club-outline { @apply border-2 border-club-red text-club-red hover:bg-club-red hover:text-white font-bold py-3 px-8 rounded transition-all duration-300 uppercase tracking-wider text-sm; }
+  .btn-club-white { @apply bg-white text-club-black hover:bg-club-off-white font-bold py-3 px-8 rounded transition-all duration-300 transform hover:scale-105 uppercase tracking-wider text-sm; }
+  .section-dark { @apply bg-club-black; }
+  .section-darker { @apply bg-club-dark; }
+  .container-yu { @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8; }
+  .card-sport { @apply bg-club-dark border border-club-gray-mid rounded-lg overflow-hidden transition-all duration-300 hover:border-club-red hover:shadow-2xl hover:-translate-y-1; }
+  .heading-xl { @apply text-5xl md:text-7xl font-black uppercase tracking-tight leading-none; }
+  .heading-lg { @apply text-3xl md:text-5xl font-black uppercase tracking-tight leading-none; }
+  .heading-md { @apply text-2xl md:text-3xl font-bold uppercase tracking-wide; }
+  .heading-sm { @apply text-lg md:text-xl font-bold uppercase tracking-wider; }
+  .divider-red { @apply w-16 h-1 bg-club-red my-4; }
+  .nav-link { @apply text-white hover:text-club-red transition-colors duration-200 font-medium uppercase tracking-wider text-sm; }
+  .section-padding { @apply py-16 md:py-24; }
+}
