@@ -1,5 +1,5 @@
 const stats = [
-  { label: 'Años de historia', value: 'Club' },
+  { label: 'Fundación', value: '2017' },
   { label: 'Disciplinas', value: '3' },
   { label: 'Equipos', value: '4' },
   { label: 'Pasión', value: '100%' },
@@ -16,8 +16,8 @@ export default function AboutSection() {
             <h2 className="heading-lg text-white mb-6">El espíritu<br /><span className="text-club-red">Young</span></h2>
             <div className="divider-red mb-8" />
             <div className="space-y-5 text-club-muted leading-relaxed">
-              <p>Young Universitario es más que un club deportivo. Es un lugar donde la pasión por el deporte se convierte en comunidad, donde cada jugador da lo mejor de sí en la cancha y fuera de ella.</p>
-              <p>Con equipos de fútbol en primera división y reserva, hockey y básquetbol, el club ofrece un espacio para crecer, competir y pertenecer.</p>
+              <p>Fundado el <span className="text-white font-semibold">14 de febrero de 2017</span>, Young Universitario es más que un club deportivo. Es un lugar donde la pasión por el deporte se convierte en comunidad, donde cada jugador da lo mejor de sí en la cancha y fuera de ella.</p>
+              <p>Con equipos de fútbol en Primera División y Reserva compitiendo en la <span className="text-white font-semibold">División D de la Liga Universitaria de Uruguay de Deportes</span>, además de hockey sobre césped y básquetbol, el club ofrece un espacio para crecer, competir y pertenecer.</p>
               <p>Los colores negro y rojo representan la garra y la determinación que definen la identidad de Young Universitario.</p>
             </div>
             <div className="mt-10">

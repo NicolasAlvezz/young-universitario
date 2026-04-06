@@ -21,7 +21,7 @@ export default function FutbolPage() {
           </div>
           <h1 className="heading-lg text-white mb-6">Fútbol</h1>
           <div className="divider-red mx-auto mb-8" />
-          <p className="text-club-muted text-lg max-w-xl mx-auto">El fútbol de Young Universitario compite con garra y determinación. Seleccioná tu equipo.</p>
+          <p className="text-club-muted text-lg max-w-xl mx-auto">El fútbol de Young Universitario compite en la División D de la Liga Universitaria de Uruguay de Deportes. Seleccioná tu equipo.</p>
         </div>
       </section>
       <section className="section-padding">
