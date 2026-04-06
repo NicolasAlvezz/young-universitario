@@ -16,6 +16,10 @@ export const metadata: Metadata = {
     locale: 'es_AR',
     siteName: 'Young Universitario',
   },
+  icons: {
+    icon: '/escudo.png',
+    apple: '/escudo.png',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

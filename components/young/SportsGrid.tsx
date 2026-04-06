@@ -1,14 +1,15 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 const sports = [
   { id: 'futbol-mayores', title: 'Primera División', category: 'Fútbol', href: '/futbol/mayores', description: 'Nuestro equipo principal compite en la división mayor. Garra, técnica y corazón en cada partido.', label: 'Mayores',
-    icon: <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12"><circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2.5" /><path d="M24 8 L28 18 L24 22 L20 18 Z" fill="currentColor" opacity="0.8" /><path d="M24 40 L28 30 L24 26 L20 30 Z" fill="currentColor" opacity="0.8" /><path d="M8 24 L18 20 L22 24 L18 28 Z" fill="currentColor" opacity="0.8" /><path d="M40 24 L30 20 L26 24 L30 28 Z" fill="currentColor" opacity="0.8" /></svg> },
+    img: '/futbol.png' },
   { id: 'futbol-reserva', title: 'Reserva', category: 'Fútbol', href: '/futbol/reserva', description: 'El semillero del club. Jóvenes talentos que dan todo para llegar a la primera.', label: 'Reserva',
-    icon: <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12"><circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2.5" /><path d="M24 8 L28 18 L24 22 L20 18 Z" fill="currentColor" opacity="0.8" /><circle cx="24" cy="24" r="4" fill="currentColor" opacity="0.4" /></svg> },
-  { id: 'hockey', title: 'Hockey', category: 'Hockey', href: '/hockey', description: 'Velocidad, precisión y trabajo en equipo. Nuestro equipo de hockey en toda su intensidad.', label: 'Hockey',
-    icon: <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12"><path d="M10 8 L10 36 Q10 42 18 42 L26 42" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /><ellipse cx="36" cy="38" rx="8" ry="4" fill="currentColor" opacity="0.7" /><path d="M20 20 L38 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.4" /></svg> },
+    img: '/futbol.png' },
+  { id: 'hockey', title: 'Hockey', category: 'Hockey', href: '/hockey', description: 'Velocidad, precisión y trabajo en equipo. Hockey sobre césped con toda la intensidad.', label: 'Hockey',
+    img: '/hockey.png' },
   { id: 'basquetbol', title: 'Básquetbol', category: 'Básquetbol', href: '/basquetbol', description: 'Altura, agilidad y determinación. El básquet del club vive en cada cancha.', label: 'Básquetbol',
-    icon: <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12"><circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2.5" /><path d="M24 4 L24 44" stroke="currentColor" strokeWidth="2" opacity="0.6" /><path d="M4 24 L44 24" stroke="currentColor" strokeWidth="2" opacity="0.6" /><path d="M24 4 Q10 14 10 24 Q10 34 24 44" stroke="currentColor" strokeWidth="2" fill="none" opacity="0.6" /><path d="M24 4 Q38 14 38 24 Q38 34 24 44" stroke="currentColor" strokeWidth="2" fill="none" opacity="0.6" /></svg> },
+    img: '/basquet.png' },
 ]
 
 export default function SportsGrid() {
@@ -26,7 +27,9 @@ export default function SportsGrid() {
               <div className="h-1 w-full bg-gradient-to-r from-club-red to-club-red-dark" />
               <div className="p-6 flex flex-col flex-1">
                 <span className="text-club-red text-xs font-bold uppercase tracking-widest mb-4">{sport.label}</span>
-                <div className="text-white mb-5 group-hover:text-club-red transition-colors duration-300">{sport.icon}</div>
+                <div className="mb-5 flex items-center h-12">
+                  <Image src={sport.img} alt={sport.title} width={48} height={48} className="object-contain w-12 h-12 group-hover:scale-110 transition-transform duration-300" />
+                </div>
                 <h3 className="heading-sm text-white mb-3 group-hover:text-club-red transition-colors duration-300">{sport.title}</h3>
                 <p className="text-club-muted text-sm leading-relaxed flex-1">{sport.description}</p>
                 <div className="mt-6 flex items-center gap-2 text-club-red text-sm font-bold uppercase tracking-wider">

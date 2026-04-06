@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import Header from '@/components/young/Header'
 import Footer from '@/components/young/Footer'
 
@@ -16,13 +17,7 @@ export default function FutbolPage() {
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-club-red opacity-10 blur-3xl rounded-full" />
         <div className="container-yu relative text-center">
           <div className="flex justify-center mb-8">
-            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-white opacity-80">
-              <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="3" />
-              <path d="M32 8 L37 20 L32 25 L27 20 Z" fill="currentColor" opacity="0.8" />
-              <path d="M32 56 L37 44 L32 39 L27 44 Z" fill="currentColor" opacity="0.8" />
-              <path d="M8 32 L20 27 L25 32 L20 37 Z" fill="currentColor" opacity="0.8" />
-              <path d="M56 32 L44 27 L39 32 L44 37 Z" fill="currentColor" opacity="0.8" />
-            </svg>
+            <Image src="/futbol.png" alt="Fútbol" width={80} height={80} className="object-contain w-20 h-20" />
           </div>
           <h1 className="heading-lg text-white mb-6">Fútbol</h1>
           <div className="divider-red mx-auto mb-8" />
