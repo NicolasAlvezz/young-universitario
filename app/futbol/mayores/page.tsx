@@ -122,9 +122,7 @@ const seasonHistory: SeasonRecord[] = [
   { year: 2017, division: 'I', pos: 1, pj: 19, g: 13, e: 3, p: 3, gf: 54, gc: 14, pts: 42, teams: 11, champion: true },
 ]
 
-const totalGoals = players.reduce((sum, p) => sum + p.goals, 0)
 const totalPlayers = players.length
-const totalMinutes = players.reduce((sum, p) => sum + p.min, 0)
 const scorers = players.filter(p => p.goals > 0).sort((a, b) => b.goals - a.goals)
 const allTimeGoals = seasonHistory.reduce((sum, s) => sum + s.gf, 0)
 const allTimeMatches = seasonHistory.reduce((sum, s) => sum + s.pj, 0)

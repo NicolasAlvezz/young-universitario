@@ -2,6 +2,8 @@
 import { useEffect } from 'react'
 import Script from 'next/script'
 
+type InstgrmWindow = Window & { instgrm?: { Embeds: { process: () => void } } }
+
 const INSTAGRAM_POSTS = [
   'https://www.instagram.com/p/DQxIe0yjzTl/',
   'https://www.instagram.com/p/DWl9coilnsu/',
@@ -11,8 +13,9 @@ const INSTAGRAM_POSTS = [
 
 export default function InstagramSection() {
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).instgrm) {
-      ;(window as any).instgrm.Embeds.process()
+    const w = window as InstgrmWindow
+    if (typeof window !== 'undefined' && w.instgrm) {
+      w.instgrm.Embeds.process()
     }
   }, [])
 
@@ -65,8 +68,9 @@ export default function InstagramSection() {
         src="https://www.instagram.com/embed.js"
         strategy="lazyOnload"
         onLoad={() => {
-          if ((window as any).instgrm) {
-            ;(window as any).instgrm.Embeds.process()
+          const w = window as InstgrmWindow
+          if (w.instgrm) {
+            w.instgrm.Embeds.process()
           }
         }}
       />

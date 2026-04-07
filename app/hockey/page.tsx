@@ -62,7 +62,6 @@ const pretemporada: FixtureMatch = { fecha: 0, opponent: 'Arena Hockey', isHome:
 
 const totalGoals = players.reduce((sum, p) => sum + p.goals, 0)
 const totalPlayers = players.length
-const activePlayers = players.filter(p => p.matches > 0).length
 
 export default function HockeyPage() {
   return (
