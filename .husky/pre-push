@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+
+# Hook pre-push: bloquea el push si lint o build fallan.
+# Se ejecuta automáticamente cuando corrés `git push`.
 
 npm run ci:check
-
