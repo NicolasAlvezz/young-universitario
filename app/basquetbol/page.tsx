@@ -1,33 +1,107 @@
+'use client'
+
 import Image from 'next/image'
 import Header from '@/components/young/Header'
 import Footer from '@/components/young/Footer'
 import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
+import { getSupabase } from '@/lib/supabase/client'
 import {
   getBasquetStats,
   getMatchSummaries,
   getPlayerScoring,
   getUniqueJornadasSorted,
-  getBasquetStandings,
 } from '@/lib/basquet-stats-store'
-
-export const metadata = { title: 'Básquetbol | Young Universitario' }
 
 /** Datos en memoria vía POST; no puede ser estática en build. */
 export const dynamic = 'force-dynamic'
+
+type PosicionRow = {
+  posicion: number | null
+  equipo: string
+  pj: number | null
+  pg: number | null
+  pe: number | null
+  pp: number | null
+  pf: number | null
+  pc: number | null
+  pts: number | null
+}
 
 export default function BasquetbolPage() {
   const allRows = getBasquetStats()
   const jornadas = getUniqueJornadasSorted()
   const matches = getMatchSummaries()
   const players = getPlayerScoring(jornadas)
-  const standings = getBasquetStandings()
 
   const wins = matches.filter((m) => m.won).length
   const losses = matches.filter((m) => !m.won).length
   const played = matches.length
   const totalPoints = allRows.reduce((s, r) => s + r.puntos, 0)
   const hasData = allRows.length > 0
-  const hasStandings = standings.length > 0
+
+  const [posiciones, setPosiciones] = useState<PosicionRow[] | null>(null)
+  const [posicionesLoading, setPosicionesLoading] = useState(true)
+  const [posicionesError, setPosicionesError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function cargarPosiciones() {
+      setPosicionesLoading(true)
+      setPosicionesError(null)
+
+      try {
+        const supabase = getSupabase()
+        if (!supabase) {
+          throw new Error('Supabase no está configurado. Cargá NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY en .env.local.')
+        }
+
+        const { data, error } = await supabase
+          .from('posiciones')
+          .select('posicion, equipo, pj, pg, pe, pp, pf, pc, pts')
+          .eq('disciplina', 'Basquetbol')
+          .order('posicion', { ascending: true })
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        if (!cancelled) {
+          setPosiciones((data ?? []) as PosicionRow[])
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setPosicionesError(e instanceof Error ? e.message : 'Error desconocido al cargar posiciones')
+          setPosiciones([])
+        }
+      } finally {
+        if (!cancelled) {
+          setPosicionesLoading(false)
+        }
+      }
+    }
+
+    cargarPosiciones()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const hasPosiciones = (posiciones?.length ?? 0) > 0
+
+  const emptyStateTabla = useMemo(
+    () => (
+      <div className="bg-club-dark border border-club-gray-mid rounded-lg p-12 text-center mb-16 max-w-2xl mx-auto">
+        <p className="text-club-muted text-sm uppercase tracking-widest mb-2">Sin sincronización aún</p>
+        <p className="text-club-gray-light text-xs leading-relaxed">
+          La tabla de posiciones aparece al enviar <span className="text-club-red font-mono text-[11px]">tabla_posiciones</span> al endpoint
+          <span className="text-club-red font-mono text-[11px]">/api/basquetbol-ingest</span>. El fixture se completará cuando lo implementemos.
+        </p>
+      </div>
+    ),
+    [],
+  )
 
   return (
     <main className="min-h-screen bg-club-black">
@@ -67,15 +141,8 @@ export default function BasquetbolPage() {
 
       <div className="section-padding">
         <div className="container-yu">
-          {!hasData && !hasStandings && (
-            <div className="bg-club-dark border border-club-gray-mid rounded-lg p-12 text-center mb-16 max-w-2xl mx-auto">
-              <p className="text-club-muted text-sm uppercase tracking-widest mb-2">Sin sincronización aún</p>
-              <p className="text-club-gray-light text-xs leading-relaxed">
-                La tabla de posiciones aparece al enviar <span className="text-club-red font-mono text-[11px]">tabla_posiciones</span> al endpoint{' '}
-                <span className="text-club-red font-mono text-[11px]">/api/basquetbol-ingest</span>. El fixture se completará cuando lo implementemos.
-              </p>
-            </div>
-          )}
+          {/* Empty state original cuando no hay estadísticas ni posiciones */}
+          {!hasData && !posicionesLoading && !hasPosiciones && !posicionesError && emptyStateTabla}
 
           {hasData && (
             <>
@@ -106,21 +173,34 @@ export default function BasquetbolPage() {
               <h2 className="heading-sm text-white">Tabla de posiciones</h2>
             </div>
 
-            {!hasStandings && (
+            {posicionesLoading && (
+              <div className="bg-club-dark border border-club-gray-mid rounded-lg p-6 text-club-muted text-sm">
+                Cargando tabla...
+              </div>
+            )}
+
+            {!posicionesLoading && posicionesError && (
+              <div className="bg-club-dark border border-red-500/40 rounded-lg p-6 text-red-200 text-sm">
+                Error al cargar la tabla de posiciones: <span className="font-mono">{posicionesError}</span>
+              </div>
+            )}
+
+            {!posicionesLoading && !posicionesError && (posiciones?.length ?? 0) === 0 && (
               <div className="bg-club-dark border border-club-gray-mid rounded-lg p-6 text-club-muted text-sm">
                 La tabla aún no fue sincronizada. Enviá <span className="text-club-red font-mono text-xs">tabla_posiciones</span> en el POST de ingestión para mostrarla aquí.
               </div>
             )}
 
-            {hasStandings && (
+            {!posicionesLoading && !posicionesError && hasPosiciones && (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[720px] border-collapse bg-club-dark border border-club-gray-mid rounded-lg overflow-hidden">
+                <table className="w-full min-w-[760px] border-collapse bg-club-dark border border-club-gray-mid rounded-lg overflow-hidden">
                   <thead>
                     <tr className="text-club-muted text-xs uppercase tracking-widest border-b border-club-gray-mid">
                       <th className="text-left px-4 py-3">Pos</th>
                       <th className="text-left px-4 py-3">Equipo</th>
                       <th className="text-center px-2 py-3">PJ</th>
                       <th className="text-center px-2 py-3">PG</th>
+                      <th className="text-center px-2 py-3">PE</th>
                       <th className="text-center px-2 py-3">PP</th>
                       <th className="text-center px-2 py-3">PF</th>
                       <th className="text-center px-2 py-3">PC</th>
@@ -128,21 +208,39 @@ export default function BasquetbolPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {standings.map((row) => (
-                      <tr
-                        key={`${row.posicion}-${row.equipo}`}
-                        className="border-b border-club-gray-mid/60 last:border-b-0 hover:bg-club-black/30"
-                      >
-                        <td className="px-4 py-3 text-white font-semibold">{row.posicion}</td>
-                        <td className="px-4 py-3 text-white font-medium">{row.equipo}</td>
-                        <td className="px-2 py-3 text-center text-club-gray-light">{row.pj}</td>
-                        <td className="px-2 py-3 text-center text-club-gray-light">{row.pg}</td>
-                        <td className="px-2 py-3 text-center text-club-gray-light">{row.pp}</td>
-                        <td className="px-2 py-3 text-center text-club-gray-light">{row.pf}</td>
-                        <td className="px-2 py-3 text-center text-club-gray-light">{row.pc}</td>
-                        <td className="px-2 py-3 text-center text-club-red font-black">{row.pts}</td>
-                      </tr>
-                    ))}
+                    {posiciones!.map((row) => {
+                      const esPrimero = Number(row.posicion ?? -1) === 1
+                      return (
+                        <tr
+                          key={`${row.posicion ?? 'na'}-${row.equipo}`}
+                          className={
+                            `border-b border-club-gray-mid/60 last:border-b-0 hover:bg-club-black/30 ` +
+                            (esPrimero ? 'bg-club-black/40 ring-1 ring-club-red/40' : '')
+                          }
+                        >
+                          <td className="px-4 py-3 text-white font-semibold">
+                            <span className={esPrimero ? 'text-club-red font-black' : ''}>{row.posicion ?? '-'}</span>
+                          </td>
+                          <td className="px-4 py-3 text-white font-medium">
+                            <span className={esPrimero ? 'inline-flex items-center gap-2' : ''}>
+                              {esPrimero && (
+                                <span className="rounded-full bg-club-red/20 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-club-red">
+                                  #1
+                                </span>
+                              )}
+                              {row.equipo}
+                            </span>
+                          </td>
+                          <td className="px-2 py-3 text-center text-club-gray-light">{row.pj ?? 0}</td>
+                          <td className="px-2 py-3 text-center text-club-gray-light">{row.pg ?? 0}</td>
+                          <td className="px-2 py-3 text-center text-club-gray-light">{row.pe ?? 0}</td>
+                          <td className="px-2 py-3 text-center text-club-gray-light">{row.pp ?? 0}</td>
+                          <td className="px-2 py-3 text-center text-club-gray-light">{row.pf ?? 0}</td>
+                          <td className="px-2 py-3 text-center text-club-gray-light">{row.pc ?? 0}</td>
+                          <td className="px-2 py-3 text-center text-club-red font-black">{row.pts ?? 0}</td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -194,6 +292,7 @@ export default function BasquetbolPage() {
             </div>
           </div>
 
+          {/* Resto del contenido (anotadores/plantel/etc.) */}
           {hasData && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
               <div className="lg:col-span-2">
