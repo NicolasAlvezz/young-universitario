@@ -7,6 +7,7 @@ import {
   getMatchSummaries,
   getPlayerScoring,
   getUniqueJornadasSorted,
+  getBasquetStandings,
 } from '@/lib/basquet-stats-store'
 
 export const metadata = { title: 'Básquetbol | Young Universitario' }
@@ -19,12 +20,14 @@ export default function BasquetbolPage() {
   const jornadas = getUniqueJornadasSorted()
   const matches = getMatchSummaries()
   const players = getPlayerScoring(jornadas)
+  const standings = getBasquetStandings()
 
   const wins = matches.filter((m) => m.won).length
   const losses = matches.filter((m) => !m.won).length
   const played = matches.length
   const totalPoints = allRows.reduce((s, r) => s + r.puntos, 0)
   const hasData = allRows.length > 0
+  const hasStandings = standings.length > 0
 
   return (
     <main className="min-h-screen bg-club-black">
@@ -55,18 +58,19 @@ export default function BasquetbolPage() {
 
       <div className="section-padding">
         <div className="container-yu">
-          {!hasData && (
+          {!hasData && !hasStandings && (
             <div className="bg-club-dark border border-club-gray-mid rounded-lg p-12 text-center mb-16 max-w-2xl mx-auto">
               <p className="text-club-muted text-sm uppercase tracking-widest mb-2">Sin estadísticas aún</p>
               <p className="text-club-gray-light text-xs leading-relaxed">
-                Los datos aparecen cuando n8n envía filas con POST a <span className="text-club-red font-mono text-[11px]">/basquetbol</span> (mismo JSON que antes).
+                Los datos aparecen cuando n8n envía filas con POST a <span className="text-club-red font-mono text-[11px]">/api/basquetbol-ingest</span>.
               </p>
             </div>
           )}
 
-          {hasData && (
+          {(hasData || hasStandings) && (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-16 max-w-3xl mx-auto">
+              {hasData && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-16 max-w-3xl mx-auto">
                 <div className="bg-club-dark border border-club-gray-mid rounded-lg p-6 text-center hover:border-club-red transition-colors">
                   <div className="text-3xl md:text-4xl font-black text-club-red mb-1">{wins}-{losses}</div>
                   <div className="text-club-muted text-xs uppercase tracking-widest font-semibold">Récord</div>
@@ -83,13 +87,69 @@ export default function BasquetbolPage() {
                   <div className="text-3xl md:text-4xl font-black text-club-red mb-1">{players.length}</div>
                   <div className="text-club-muted text-xs uppercase tracking-widest font-semibold">Jugadores</div>
                 </div>
+                </div>
+              )}
+
+              <div className="mb-16">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-1 h-8 bg-club-red rounded" />
+                  <h2 className="heading-sm text-white">Tabla de posiciones</h2>
+                </div>
+
+                {!hasStandings && (
+                  <div className="bg-club-dark border border-club-gray-mid rounded-lg p-6 text-club-muted text-sm">
+                    La tabla aún no fue sincronizada. Enviá <span className="text-club-red font-mono text-xs">tabla_posiciones</span> en el POST de ingestión para mostrarla aquí.
+                  </div>
+                )}
+
+                {hasStandings && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[720px] border-collapse bg-club-dark border border-club-gray-mid rounded-lg overflow-hidden">
+                      <thead>
+                        <tr className="text-club-muted text-xs uppercase tracking-widest border-b border-club-gray-mid">
+                          <th className="text-left px-4 py-3">Pos</th>
+                          <th className="text-left px-4 py-3">Equipo</th>
+                          <th className="text-center px-2 py-3">PJ</th>
+                          <th className="text-center px-2 py-3">PG</th>
+                          <th className="text-center px-2 py-3">PP</th>
+                          <th className="text-center px-2 py-3">PF</th>
+                          <th className="text-center px-2 py-3">PC</th>
+                          <th className="text-center px-2 py-3">PTS</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {standings.map((row) => (
+                          <tr
+                            key={`${row.posicion}-${row.equipo}`}
+                            className="border-b border-club-gray-mid/60 last:border-b-0 hover:bg-club-black/30"
+                          >
+                            <td className="px-4 py-3 text-white font-semibold">{row.posicion}</td>
+                            <td className="px-4 py-3 text-white font-medium">{row.equipo}</td>
+                            <td className="px-2 py-3 text-center text-club-gray-light">{row.pj}</td>
+                            <td className="px-2 py-3 text-center text-club-gray-light">{row.pg}</td>
+                            <td className="px-2 py-3 text-center text-club-gray-light">{row.pp}</td>
+                            <td className="px-2 py-3 text-center text-club-gray-light">{row.pf}</td>
+                            <td className="px-2 py-3 text-center text-club-gray-light">{row.pc}</td>
+                            <td className="px-2 py-3 text-center text-club-red font-black">{row.pts}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
 
               <div className="mb-16">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="w-1 h-8 bg-club-red rounded" />
-                  <h2 className="heading-sm text-white">Resultados</h2>
+                  <h2 className="heading-sm text-white">Fixture</h2>
                 </div>
+
+                {!matches.length && (
+                  <div className="bg-club-dark border border-club-gray-mid rounded-lg p-6 text-club-muted text-sm mb-8">
+                    El fixture aparece cuando se sincronizan partidos en las estadísticas.
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                   {matches.map((m) => (
@@ -124,7 +184,8 @@ export default function BasquetbolPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+              {hasData && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
                 <div className="lg:col-span-2">
                   <div>
                     <div className="flex items-center gap-3 mb-8">
@@ -193,7 +254,8 @@ export default function BasquetbolPage() {
                     <a href="https://www.instagram.com/younguniversitario/" target="_blank" rel="noopener noreferrer" className="btn-club-red text-xs py-2 px-5 inline-block">@younguniversitario</a>
                   </div>
                 </div>
-              </div>
+                </div>
+              )}
             </>
           )}
         </div>

@@ -12,7 +12,19 @@ export interface BasquetStatRow extends BasquetStatPayload {
   receivedAt: number
 }
 
+export interface BasquetStandingRow {
+  posicion: number
+  equipo: string
+  pj: number
+  pg: number
+  pp: number
+  pf: number
+  pc: number
+  pts: number
+}
+
 const rows: BasquetStatRow[] = []
+const standings: BasquetStandingRow[] = []
 
 export function appendBasquetStat(payload: BasquetStatPayload): void {
   rows.push({ ...payload, receivedAt: Date.now() })
@@ -20,6 +32,14 @@ export function appendBasquetStat(payload: BasquetStatPayload): void {
 
 export function getBasquetStats(): BasquetStatRow[] {
   return [...rows]
+}
+
+export function setBasquetStandings(nextStandings: BasquetStandingRow[]): void {
+  standings.splice(0, standings.length, ...nextStandings)
+}
+
+export function getBasquetStandings(): BasquetStandingRow[] {
+  return [...standings]
 }
 
 function matchKey(r: BasquetStatRow): string {
