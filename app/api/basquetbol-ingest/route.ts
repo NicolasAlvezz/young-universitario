@@ -40,15 +40,16 @@ function parseStandings(raw: unknown): BasquetStandingRow[] | null {
       return null
     }
 
+    // En este punto, la guard clause garantiza que ninguna variable es null.
     parsed.push({
-      posicion,
+      posicion: posicion as number,
       equipo,
-      pj,
-      pg,
-      pp,
-      pf,
-      pc,
-      pts,
+      pj: pj as number,
+      pg: pg as number,
+      pp: pp as number,
+      pf: pf as number,
+      pc: pc as number,
+      pts: pts as number,
     })
   }
 
