@@ -103,6 +103,24 @@ export default function BasquetbolPage() {
     [],
   )
 
+  const fixture = [
+    { fecha: 'FECHA 1', rival: 'ELBIO FERNANDEZ' },
+    { fecha: 'FECHA 2', rival: 'ORT BLANCO' },
+    { fecha: 'FECHA 3', rival: 'MARISTAS DEPORTIVO' },
+    { fecha: 'FECHA 4', rival: 'OLD BOYS CLUB' },
+    { fecha: 'FECHA 5', rival: 'BELLA UNION UNIVERSITARIO' },
+    { fecha: 'FECHA 6', rival: 'CLUB BELLAKEO C.B.' },
+    { fecha: 'FECHA 7', rival: 'CLUB UNIVERSIDAD CATOLICA' },
+    { fecha: 'FECHA 8', rival: 'UNIVERSIDAD DE MONTEVIDEO' },
+    { fecha: 'FECHA 9', rival: 'CLUB NAUTICO' },
+    { fecha: 'FECHA 10', rival: 'UNIVERSIDAD ORT' },
+    { fecha: 'FECHA 11', rival: 'AURIBLANCO BASKETBALL CLUB' },
+    { fecha: 'FECHA 12', rival: 'CLUB CHAMPAGNAT RUGBY' },
+    { fecha: 'FECHA 13', rival: 'CEIBOS CLUB' },
+    { fecha: 'FECHA 14', rival: 'REDUCTO UNIVERSITARIO' },
+    { fecha: 'FECHA 15', rival: 'J.M.L.M' },
+  ]
+
   return (
     <main className="min-h-screen bg-club-black">
       <Header />
@@ -112,12 +130,19 @@ export default function BasquetbolPage() {
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-club-red opacity-10 blur-3xl rounded-full" />
         <div className="container-yu relative text-center">
           <div className="flex justify-center mb-8 opacity-80">
-            <Image src="/basquet.png" alt="Básquetbol" width={80} height={80} className="object-contain w-20 h-20" />
+            <Image
+              src="/basquetbol-logo.svg"
+              alt="Básquetbol"
+              width={80}
+              height={80}
+              className="object-contain w-20 h-20"
+              priority
+            />
           </div>
           <h1 className="heading-lg text-white mb-6">Básquetbol</h1>
           <div className="divider-red mx-auto mb-8" />
           <p className="text-club-muted text-lg max-w-2xl mx-auto">
-            Estadísticas y resultados cargados desde el sistema de la liga (n8n → POST). Cuando aún no hay datos enviados, esta sección queda vacía hasta la próxima sincronización.
+            Estadísticas de resultados cargadas automaticamente.
           </p>
 
           <div className="mt-8 flex justify-center">
@@ -253,39 +278,33 @@ export default function BasquetbolPage() {
               <h2 className="heading-sm text-white">Fixture</h2>
             </div>
 
-            {!matches.length && (
-              <div className="bg-club-dark border border-club-gray-mid rounded-lg p-6 text-club-muted text-sm mb-8">
-                Próximamente: fixture oficial. Por ahora, esta sección se completa cuando se sincronizan partidos en las estadísticas.
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-              {matches.map((m) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {fixture.map((partido) => (
                 <div
-                  key={`${m.jornada}-${m.rival}-${m.fecha}`}
-                  className={`rounded-lg p-5 border-2 ${m.won ? 'bg-green-500/5 border-green-500/30' : 'bg-red-500/5 border-red-500/30'}`}
+                  key={partido.fecha}
+                  className="rounded-lg p-5 bg-club-dark border border-club-gray-mid hover:border-club-red/50 transition-colors"
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-club-muted text-xs uppercase tracking-widest font-semibold">{m.jornada}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded font-bold uppercase ${m.won ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
-                      {m.won ? 'Victoria' : 'Derrota'}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-club-muted text-xs uppercase tracking-widest font-semibold">
+                      {partido.fecha}
+                    </span>
+                    <span className="text-xs px-2 py-0.5 rounded font-bold uppercase bg-club-gray-mid/60 text-white">
+                      VS
                     </span>
                   </div>
-                  <div className="flex items-center justify-center gap-4 mb-4">
-                    <div className="text-right flex-1">
+
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
                       <p className="text-white font-bold text-sm">Young U</p>
+                      <p className="text-club-muted text-xs">Local/Visitante a confirmar</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-2xl font-black ${m.won ? 'text-green-400' : 'text-red-400'}`}>{m.youngScore}</span>
-                      <span className="text-club-muted text-sm font-bold">-</span>
-                      <span className={`text-2xl font-black ${!m.won ? 'text-green-400' : 'text-red-400'}`}>{m.opponentScore}</span>
+
+                    <div className="text-right min-w-0">
+                      <p className="text-white font-bold text-sm truncate" title={partido.rival}>
+                        {partido.rival}
+                      </p>
+                      <p className="text-club-muted text-xs">Cancha/horario a confirmar</p>
                     </div>
-                    <div className="text-left flex-1">
-                      <p className="text-club-muted font-bold text-sm truncate">{m.rival}</p>
-                    </div>
-                  </div>
-                  <div className="text-center text-club-muted text-xs">
-                    {m.fecha} · {m.cancha}
                   </div>
                 </div>
               ))}
