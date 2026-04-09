@@ -45,6 +45,15 @@ export default function BasquetbolPage() {
           <p className="text-club-muted text-lg max-w-2xl mx-auto">
             Estadísticas y resultados cargados desde el sistema de la liga (n8n → POST). Cuando aún no hay datos enviados, esta sección queda vacía hasta la próxima sincronización.
           </p>
+
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/estadisticas_basquetbol"
+              className="btn-club-red py-3 px-6 text-xs md:text-sm inline-flex items-center gap-2"
+            >
+              Ver estadísticas de básquetbol
+            </Link>
+          </div>
         </div>
       </section>
 
