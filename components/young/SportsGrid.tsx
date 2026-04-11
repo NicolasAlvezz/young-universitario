@@ -9,7 +9,7 @@ const sports = [
   { id: 'hockey', title: 'Hockey', category: 'Hockey', href: '/hockey', description: 'Velocidad, precisión y trabajo en equipo. Hockey sobre césped con toda la intensidad.', label: 'Hockey',
     img: null },
   { id: 'basquetbol', title: 'Básquetbol', category: 'Básquetbol', href: '/basquetbol', description: 'Altura, agilidad y determinación. El básquet del club vive en cada cancha.', label: 'Básquetbol',
-    img: null },
+    img: '/basquetbol-logo.svg' },
 ]
 
 export default function SportsGrid() {
