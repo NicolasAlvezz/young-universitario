@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Header from '@/components/young/Header'
 import Footer from '@/components/young/Footer'
 import Link from 'next/link'
@@ -74,7 +73,8 @@ export default function HockeyPage() {
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-club-red opacity-10 blur-3xl rounded-full" />
         <div className="container-yu relative text-center">
           <div className="flex justify-center mb-8 opacity-80">
-            <Image src="/hockey.png" alt="Hockey" width={80} height={80} className="object-contain w-20 h-20" />
+            {/* Imagen de disciplina removida */}
+            <div className="w-20 h-20" />
           </div>
           <h1 className="heading-lg text-white mb-6">Hockey</h1>
           <div className="divider-red mx-auto mb-8" />

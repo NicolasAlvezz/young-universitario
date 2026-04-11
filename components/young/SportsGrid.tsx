@@ -7,9 +7,9 @@ const sports = [
   { id: 'futbol-reserva', title: 'Reserva', category: 'Fútbol', href: '/futbol/reserva', description: 'El semillero del club. Jóvenes talentos que dan todo para llegar a la primera.', label: 'Reserva',
     img: '/futbol.png' },
   { id: 'hockey', title: 'Hockey', category: 'Hockey', href: '/hockey', description: 'Velocidad, precisión y trabajo en equipo. Hockey sobre césped con toda la intensidad.', label: 'Hockey',
-    img: '/hockey.png' },
+    img: null },
   { id: 'basquetbol', title: 'Básquetbol', category: 'Básquetbol', href: '/basquetbol', description: 'Altura, agilidad y determinación. El básquet del club vive en cada cancha.', label: 'Básquetbol',
-    img: '/basquet.png' },
+    img: null },
 ]
 
 export default function SportsGrid() {
@@ -28,7 +28,9 @@ export default function SportsGrid() {
               <div className="p-6 flex flex-col flex-1">
                 <span className="text-club-red text-xs font-bold uppercase tracking-widest mb-4">{sport.label}</span>
                 <div className="mb-5 flex items-center h-12">
-                  <Image src={sport.img} alt={sport.title} width={48} height={48} className="object-contain w-12 h-12 group-hover:scale-110 transition-transform duration-300" />
+                  {sport.img ? (
+                    <Image src={sport.img} alt={sport.title} width={48} height={48} className="object-contain w-12 h-12 group-hover:scale-110 transition-transform duration-300" />
+                  ) : null}
                 </div>
                 <h3 className="heading-sm text-white mb-3 group-hover:text-club-red transition-colors duration-300">{sport.title}</h3>
                 <p className="text-club-muted text-sm leading-relaxed flex-1">{sport.description}</p>
