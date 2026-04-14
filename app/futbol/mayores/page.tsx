@@ -134,6 +134,7 @@ export const dynamic = 'force-dynamic'
 type PosicionFutbolRow = {
   posicion: number | null
   equipo: string
+  disciplina?: string | null
   pj: number | null
   pg: number | null
   pe: number | null
@@ -151,7 +152,7 @@ async function TablaPosicionesActual() {
 
   const { data, error } = await supabase
     .from('posiciones')
-    .select('posicion, equipo, pj, pg, pe, pp, pf, pc, pts')
+    .select('posicion, equipo, disciplina, pj, pg, pe, pp, pf, pc, pts')
     .eq('disciplina', 'Futbol')
     .order('posicion', { ascending: true })
 
@@ -170,22 +171,27 @@ function TablaPosicionesSkeleton() {
   )
 }
 
-async function TablaPosiciones({ fallback }: { fallback: React.ReactNode }) {
+function TablaPosicionesEmptyState() {
+  return (
+    <div className="bg-club-dark border border-club-gray-mid rounded-lg p-6 text-club-muted text-sm">
+      Aún no hay datos sincronizados para la temporada actual. Cuando el workflow cargue la tabla <span className="text-club-red font-mono text-xs">posiciones</span> con <span className="text-club-red font-mono text-xs">disciplina = &apos;Futbol&apos;</span>, la vas a ver acá.
+    </div>
+  )
+}
+
+async function TablaPosiciones() {
   const { rows, error } = await TablaPosicionesActual()
 
   if (error) {
     return (
-      <>
-        <div className="bg-club-dark border border-red-500/40 rounded-lg p-6 text-red-200 text-sm mb-6">
-          Error al cargar la tabla de posiciones: <span className="font-mono">{error}</span>
-        </div>
-        {fallback}
-      </>
+      <div className="bg-club-dark border border-red-500/40 rounded-lg p-6 text-red-200 text-sm">
+        Error al cargar la tabla de posiciones: <span className="font-mono">{error}</span>
+      </div>
     )
   }
 
   if (!rows || rows.length === 0) {
-    return <>{fallback}</>
+    return <TablaPosicionesEmptyState />
   }
 
   return (
@@ -314,65 +320,70 @@ export default function FutbolMayoresPage() {
             </div>
 
             <Suspense fallback={<TablaPosicionesSkeleton />}>
-              <TablaPosiciones
-                fallback={
-                  <>
-                    <div className="overflow-x-auto">
-                      <div className="hidden sm:grid grid-cols-12 gap-1 px-4 py-3 text-club-muted text-xs uppercase tracking-widest font-semibold border-b border-club-gray-mid mb-2 min-w-[600px]">
-                        <div className="col-span-1 text-center">Pos</div>
-                        <div className="col-span-3">Equipo</div>
-                        <div className="col-span-1 text-center">PJ</div>
-                        <div className="col-span-1 text-center">G</div>
-                        <div className="col-span-1 text-center">E</div>
-                        <div className="col-span-1 text-center">P</div>
-                        <div className="col-span-1 text-center">GF</div>
-                        <div className="col-span-1 text-center">GC</div>
-                        <div className="col-span-1 text-center">DG</div>
-                        <div className="col-span-1 text-center">Pts</div>
-                      </div>
-
-                      <div className="space-y-1 min-w-[600px]">
-                        {standings.map((team) => (
-                          <div
-                            key={team.name}
-                            className={`grid grid-cols-12 gap-1 rounded px-4 py-3 items-center transition-colors ${
-                              team.isYoung
-                                ? 'bg-club-red/10 border-2 border-club-red'
-                                : 'bg-club-dark border border-club-gray-mid hover:border-club-gray-light/30'
-                            }`}
-                          >
-                            <div className="col-span-1 text-center">
-                              <span className={`font-black text-sm ${team.isYoung ? 'text-club-red' : 'text-club-muted'}`}>{team.pos}</span>
-                            </div>
-                            <div className="col-span-3">
-                              <span className={`text-sm font-semibold truncate ${team.isYoung ? 'text-white' : 'text-club-gray-light'}`}>{team.name}</span>
-                            </div>
-                            <div className="col-span-1 text-center text-white text-sm">{team.pj}</div>
-                            <div className="col-span-1 text-center text-green-400 text-sm font-medium">{team.g}</div>
-                            <div className="col-span-1 text-center text-yellow-400 text-sm font-medium">{team.e}</div>
-                            <div className="col-span-1 text-center text-red-400 text-sm font-medium">{team.p}</div>
-                            <div className="col-span-1 text-center text-club-muted text-sm">{team.gf}</div>
-                            <div className="col-span-1 text-center text-club-muted text-sm">{team.gc}</div>
-                            <div className="col-span-1 text-center">
-                              <span className={`text-sm font-semibold ${team.gf - team.gc > 0 ? 'text-green-400' : team.gf - team.gc < 0 ? 'text-red-400' : 'text-club-muted'}`}>
-                                {team.gf - team.gc > 0 ? '+' : ''}{team.gf - team.gc}
-                              </span>
-                            </div>
-                            <div className="col-span-1 text-center">
-                              <span className={`font-black text-sm ${team.isYoung ? 'text-club-red' : 'text-white'}`}>{team.pts}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <p className="text-club-muted text-xs mt-4 text-right">
-                      Fuente: <a href="https://liga-stats.onrender.com/equipos/young-universitario?torneo=Mayores%20Masculino" target="_blank" rel="noopener noreferrer" className="text-club-red hover:underline">liga-stats.onrender.com</a> · <a href="https://ligauniversitaria.org.uy/" target="_blank" rel="noopener noreferrer" className="text-club-red hover:underline">ligauniversitaria.org.uy</a>
-                    </p>
-                  </>
-                }
-              />
+              <TablaPosiciones />
             </Suspense>
+          </div>
+
+          {/* Histórico (hardcodeado) */}
+          <div className="mb-16">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-1 h-8 bg-club-red rounded" />
+              <h2 className="heading-sm text-white">Histórico</h2>
+              <span className="text-club-muted text-xs uppercase tracking-widest ml-auto">Referencia (hardcodeada)</span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <div className="hidden sm:grid grid-cols-12 gap-1 px-4 py-3 text-club-muted text-xs uppercase tracking-widest font-semibold border-b border-club-gray-mid mb-2 min-w-[600px]">
+                <div className="col-span-1 text-center">Pos</div>
+                <div className="col-span-3">Equipo</div>
+                <div className="col-span-1 text-center">PJ</div>
+                <div className="col-span-1 text-center">G</div>
+                <div className="col-span-1 text-center">E</div>
+                <div className="col-span-1 text-center">P</div>
+                <div className="col-span-1 text-center">GF</div>
+                <div className="col-span-1 text-center">GC</div>
+                <div className="col-span-1 text-center">DG</div>
+                <div className="col-span-1 text-center">Pts</div>
+              </div>
+
+              <div className="space-y-1 min-w-[600px]">
+                {standings.map((team) => (
+                  <div
+                    key={team.name}
+                    className={`grid grid-cols-12 gap-1 rounded px-4 py-3 items-center transition-colors ${
+                      team.isYoung
+                        ? 'bg-club-red/10 border-2 border-club-red'
+                        : 'bg-club-dark border border-club-gray-mid hover:border-club-gray-light/30'
+                    }`}
+                  >
+                    <div className="col-span-1 text-center">
+                      <span className={`font-black text-sm ${team.isYoung ? 'text-club-red' : 'text-club-muted'}`}>{team.pos}</span>
+                    </div>
+                    <div className="col-span-3">
+                      <span className={`text-sm font-semibold truncate ${team.isYoung ? 'text-white' : 'text-club-gray-light'}`}>{team.name}</span>
+                    </div>
+                    <div className="col-span-1 text-center text-white text-sm">{team.pj}</div>
+                    <div className="col-span-1 text-center text-green-400 text-sm font-medium">{team.g}</div>
+                    <div className="col-span-1 text-center text-yellow-400 text-sm font-medium">{team.e}</div>
+                    <div className="col-span-1 text-center text-red-400 text-sm font-medium">{team.p}</div>
+                    <div className="col-span-1 text-center text-club-muted text-sm">{team.gf}</div>
+                    <div className="col-span-1 text-center text-club-muted text-sm">{team.gc}</div>
+                    <div className="col-span-1 text-center">
+                      <span className={`text-sm font-semibold ${team.gf - team.gc > 0 ? 'text-green-400' : team.gf - team.gc < 0 ? 'text-red-400' : 'text-club-muted'}`}>
+                        {team.gf - team.gc > 0 ? '+' : ''}{team.gf - team.gc}
+                      </span>
+                    </div>
+                    <div className="col-span-1 text-center">
+                      <span className={`font-black text-sm ${team.isYoung ? 'text-club-red' : 'text-white'}`}>{team.pts}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-club-muted text-xs mt-4 text-right">
+              Fuente: <a href="https://liga-stats.onrender.com/equipos/young-universitario?torneo=Mayores%20Masculino" target="_blank" rel="noopener noreferrer" className="text-club-red hover:underline">liga-stats.onrender.com</a> · <a href="https://ligauniversitaria.org.uy/" target="_blank" rel="noopener noreferrer" className="text-club-red hover:underline">ligauniversitaria.org.uy</a>
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
