@@ -1,6 +1,7 @@
 import Header from '@/components/young/Header'
 import Footer from '@/components/young/Footer'
 import Link from 'next/link'
+import StandingsTable from '@/components/young/StandingsTable'
 
 export const metadata = { title: 'Hockey | Young Universitario' }
 
@@ -107,6 +108,11 @@ export default function HockeyPage() {
               <div className="text-3xl md:text-4xl font-black text-club-red mb-1">2</div>
               <div className="text-club-muted text-xs uppercase tracking-widest font-semibold">Fechas</div>
             </div>
+          </div>
+
+          {/* Tabla de posiciones (Supabase) */}
+          <div className="mb-16">
+            <StandingsTable disciplina="Hockey" titulo="Tabla de posiciones" />
           </div>
 
           {/* Fixture */}
