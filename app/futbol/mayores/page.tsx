@@ -2,6 +2,8 @@ import Image from 'next/image'
 import Header from '@/components/young/Header'
 import Footer from '@/components/young/Footer'
 import Link from 'next/link'
+import { getSupabase } from '@/lib/supabase/client'
+import { Suspense } from 'react'
 
 export const metadata = { title: 'Fútbol Primera División | Young Universitario' }
 
@@ -127,6 +129,124 @@ const scorers = players.filter(p => p.goals > 0).sort((a, b) => b.goals - a.goal
 const allTimeGoals = seasonHistory.reduce((sum, s) => sum + s.gf, 0)
 const allTimeMatches = seasonHistory.reduce((sum, s) => sum + s.pj, 0)
 
+export const dynamic = 'force-dynamic'
+
+type PosicionFutbolRow = {
+  posicion: number | null
+  equipo: string
+  pj: number | null
+  pg: number | null
+  pe: number | null
+  pp: number | null
+  pf: number | null
+  pc: number | null
+  pts: number | null
+}
+
+async function TablaPosicionesActual() {
+  const supabase = getSupabase()
+  if (!supabase) {
+    return { rows: null as PosicionFutbolRow[] | null, error: 'Supabase no está configurado (faltan NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY en .env.local).' }
+  }
+
+  const { data, error } = await supabase
+    .from('posiciones')
+    .select('posicion, equipo, pj, pg, pe, pp, pf, pc, pts')
+    .eq('disciplina', 'Futbol')
+    .order('posicion', { ascending: true })
+
+  if (error) {
+    return { rows: null as PosicionFutbolRow[] | null, error: error.message }
+  }
+
+  return { rows: (data ?? []) as PosicionFutbolRow[], error: null as string | null }
+}
+
+function TablaPosicionesSkeleton() {
+  return (
+    <div className="bg-club-dark border border-club-gray-mid rounded-lg p-6 text-club-muted text-sm">
+      Cargando tabla...
+    </div>
+  )
+}
+
+async function TablaPosiciones({ fallback }: { fallback: React.ReactNode }) {
+  const { rows, error } = await TablaPosicionesActual()
+
+  if (error) {
+    return (
+      <>
+        <div className="bg-club-dark border border-red-500/40 rounded-lg p-6 text-red-200 text-sm mb-6">
+          Error al cargar la tabla de posiciones: <span className="font-mono">{error}</span>
+        </div>
+        {fallback}
+      </>
+    )
+  }
+
+  if (!rows || rows.length === 0) {
+    return <>{fallback}</>
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[760px] border-collapse bg-club-dark border border-club-gray-mid rounded-lg overflow-hidden">
+        <thead>
+          <tr className="text-club-muted text-xs uppercase tracking-widest border-b border-club-gray-mid">
+            <th className="text-left px-4 py-3">Pos</th>
+            <th className="text-left px-4 py-3">Equipo</th>
+            <th className="text-center px-2 py-3">PJ</th>
+            <th className="text-center px-2 py-3">PG</th>
+            <th className="text-center px-2 py-3">PE</th>
+            <th className="text-center px-2 py-3">PP</th>
+            <th className="text-center px-2 py-3">GF</th>
+            <th className="text-center px-2 py-3">GC</th>
+            <th className="text-center px-2 py-3">PTS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const esPrimero = Number(row.posicion ?? -1) === 1
+            const esYoung = row.equipo?.toLowerCase().includes('young')
+
+            return (
+              <tr
+                key={`${row.posicion ?? 'na'}-${row.equipo}`}
+                className={
+                  `border-b border-club-gray-mid/60 last:border-b-0 hover:bg-club-black/30 ` +
+                  (esPrimero ? 'bg-club-black/40 ring-1 ring-club-red/40 ' : '') +
+                  (esYoung ? 'bg-club-red/10 ' : '')
+                }
+              >
+                <td className="px-4 py-3 text-white font-semibold">
+                  <span className={esPrimero ? 'text-club-red font-black' : ''}>{row.posicion ?? '-'}</span>
+                </td>
+                <td className="px-4 py-3 text-white font-medium">
+                  <span className={esPrimero ? 'inline-flex items-center gap-2' : ''}>
+                    {esPrimero && (
+                      <span className="rounded-full bg-club-red/20 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-club-red">
+                        #1
+                      </span>
+                    )}
+                    {row.equipo}
+                  </span>
+                </td>
+                <td className="px-2 py-3 text-center text-club-gray-light">{row.pj ?? 0}</td>
+                <td className="px-2 py-3 text-center text-club-gray-light">{row.pg ?? 0}</td>
+                <td className="px-2 py-3 text-center text-club-gray-light">{row.pe ?? 0}</td>
+                <td className="px-2 py-3 text-center text-club-gray-light">{row.pp ?? 0}</td>
+                <td className="px-2 py-3 text-center text-club-gray-light">{row.pf ?? 0}</td>
+                <td className="px-2 py-3 text-center text-club-gray-light">{row.pc ?? 0}</td>
+                <td className="px-2 py-3 text-center text-club-red font-black">{row.pts ?? 0}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 export default function FutbolMayoresPage() {
   return (
     <main className="min-h-screen bg-club-black">
@@ -190,61 +310,69 @@ export default function FutbolMayoresPage() {
             <div className="flex items-center gap-3 mb-8">
               <div className="w-1 h-8 bg-club-red rounded" />
               <h2 className="heading-sm text-white">Tabla de Posiciones</h2>
-              <span className="text-club-muted text-xs uppercase tracking-widest ml-auto">Divisional D — 2025 (Final)</span>
+              <span className="text-club-muted text-xs uppercase tracking-widest ml-auto">Temporada actual</span>
             </div>
 
-            <div className="overflow-x-auto">
-              <div className="hidden sm:grid grid-cols-12 gap-1 px-4 py-3 text-club-muted text-xs uppercase tracking-widest font-semibold border-b border-club-gray-mid mb-2 min-w-[600px]">
-                <div className="col-span-1 text-center">Pos</div>
-                <div className="col-span-3">Equipo</div>
-                <div className="col-span-1 text-center">PJ</div>
-                <div className="col-span-1 text-center">G</div>
-                <div className="col-span-1 text-center">E</div>
-                <div className="col-span-1 text-center">P</div>
-                <div className="col-span-1 text-center">GF</div>
-                <div className="col-span-1 text-center">GC</div>
-                <div className="col-span-1 text-center">DG</div>
-                <div className="col-span-1 text-center">Pts</div>
-              </div>
+            <Suspense fallback={<TablaPosicionesSkeleton />}>
+              <TablaPosiciones
+                fallback={
+                  <>
+                    <div className="overflow-x-auto">
+                      <div className="hidden sm:grid grid-cols-12 gap-1 px-4 py-3 text-club-muted text-xs uppercase tracking-widest font-semibold border-b border-club-gray-mid mb-2 min-w-[600px]">
+                        <div className="col-span-1 text-center">Pos</div>
+                        <div className="col-span-3">Equipo</div>
+                        <div className="col-span-1 text-center">PJ</div>
+                        <div className="col-span-1 text-center">G</div>
+                        <div className="col-span-1 text-center">E</div>
+                        <div className="col-span-1 text-center">P</div>
+                        <div className="col-span-1 text-center">GF</div>
+                        <div className="col-span-1 text-center">GC</div>
+                        <div className="col-span-1 text-center">DG</div>
+                        <div className="col-span-1 text-center">Pts</div>
+                      </div>
 
-              <div className="space-y-1 min-w-[600px]">
-                {standings.map((team) => (
-                  <div
-                    key={team.name}
-                    className={`grid grid-cols-12 gap-1 rounded px-4 py-3 items-center transition-colors ${
-                      team.isYoung
-                        ? 'bg-club-red/10 border-2 border-club-red'
-                        : 'bg-club-dark border border-club-gray-mid hover:border-club-gray-light/30'
-                    }`}
-                  >
-                    <div className="col-span-1 text-center">
-                      <span className={`font-black text-sm ${team.isYoung ? 'text-club-red' : 'text-club-muted'}`}>{team.pos}</span>
+                      <div className="space-y-1 min-w-[600px]">
+                        {standings.map((team) => (
+                          <div
+                            key={team.name}
+                            className={`grid grid-cols-12 gap-1 rounded px-4 py-3 items-center transition-colors ${
+                              team.isYoung
+                                ? 'bg-club-red/10 border-2 border-club-red'
+                                : 'bg-club-dark border border-club-gray-mid hover:border-club-gray-light/30'
+                            }`}
+                          >
+                            <div className="col-span-1 text-center">
+                              <span className={`font-black text-sm ${team.isYoung ? 'text-club-red' : 'text-club-muted'}`}>{team.pos}</span>
+                            </div>
+                            <div className="col-span-3">
+                              <span className={`text-sm font-semibold truncate ${team.isYoung ? 'text-white' : 'text-club-gray-light'}`}>{team.name}</span>
+                            </div>
+                            <div className="col-span-1 text-center text-white text-sm">{team.pj}</div>
+                            <div className="col-span-1 text-center text-green-400 text-sm font-medium">{team.g}</div>
+                            <div className="col-span-1 text-center text-yellow-400 text-sm font-medium">{team.e}</div>
+                            <div className="col-span-1 text-center text-red-400 text-sm font-medium">{team.p}</div>
+                            <div className="col-span-1 text-center text-club-muted text-sm">{team.gf}</div>
+                            <div className="col-span-1 text-center text-club-muted text-sm">{team.gc}</div>
+                            <div className="col-span-1 text-center">
+                              <span className={`text-sm font-semibold ${team.gf - team.gc > 0 ? 'text-green-400' : team.gf - team.gc < 0 ? 'text-red-400' : 'text-club-muted'}`}>
+                                {team.gf - team.gc > 0 ? '+' : ''}{team.gf - team.gc}
+                              </span>
+                            </div>
+                            <div className="col-span-1 text-center">
+                              <span className={`font-black text-sm ${team.isYoung ? 'text-club-red' : 'text-white'}`}>{team.pts}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="col-span-3">
-                      <span className={`text-sm font-semibold truncate ${team.isYoung ? 'text-white' : 'text-club-gray-light'}`}>{team.name}</span>
-                    </div>
-                    <div className="col-span-1 text-center text-white text-sm">{team.pj}</div>
-                    <div className="col-span-1 text-center text-green-400 text-sm font-medium">{team.g}</div>
-                    <div className="col-span-1 text-center text-yellow-400 text-sm font-medium">{team.e}</div>
-                    <div className="col-span-1 text-center text-red-400 text-sm font-medium">{team.p}</div>
-                    <div className="col-span-1 text-center text-club-muted text-sm">{team.gf}</div>
-                    <div className="col-span-1 text-center text-club-muted text-sm">{team.gc}</div>
-                    <div className="col-span-1 text-center">
-                      <span className={`text-sm font-semibold ${team.gf - team.gc > 0 ? 'text-green-400' : team.gf - team.gc < 0 ? 'text-red-400' : 'text-club-muted'}`}>
-                        {team.gf - team.gc > 0 ? '+' : ''}{team.gf - team.gc}
-                      </span>
-                    </div>
-                    <div className="col-span-1 text-center">
-                      <span className={`font-black text-sm ${team.isYoung ? 'text-club-red' : 'text-white'}`}>{team.pts}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
 
-            <p className="text-club-muted text-xs mt-4 text-right">
-              Fuente: <a href="https://liga-stats.onrender.com/equipos/young-universitario?torneo=Mayores%20Masculino" target="_blank" rel="noopener noreferrer" className="text-club-red hover:underline">liga-stats.onrender.com</a> · <a href="https://ligauniversitaria.org.uy/" target="_blank" rel="noopener noreferrer" className="text-club-red hover:underline">ligauniversitaria.org.uy</a>
-            </p>
+                    <p className="text-club-muted text-xs mt-4 text-right">
+                      Fuente: <a href="https://liga-stats.onrender.com/equipos/young-universitario?torneo=Mayores%20Masculino" target="_blank" rel="noopener noreferrer" className="text-club-red hover:underline">liga-stats.onrender.com</a> · <a href="https://ligauniversitaria.org.uy/" target="_blank" rel="noopener noreferrer" className="text-club-red hover:underline">ligauniversitaria.org.uy</a>
+                    </p>
+                  </>
+                }
+              />
+            </Suspense>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
