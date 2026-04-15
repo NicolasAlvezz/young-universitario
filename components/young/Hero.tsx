@@ -35,9 +35,13 @@ export default function Hero() {
         </div>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-club-red to-transparent" />
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce-gentle">
-        <span className="text-club-muted text-xs uppercase tracking-widest">Explorar</span>
-        <div className="w-px h-8 bg-club-gray-light" />
+
+      {/* Indicador centrado */}
+      <div className="absolute bottom-8 left-0 right-0 flex justify-center">
+        <div className="flex flex-col items-center gap-2 animate-bounce-gentle">
+          <span className="text-club-muted text-xs uppercase tracking-widest">Explorar</span>
+          <div className="w-px h-8 bg-club-gray-light" />
+        </div>
       </div>
     </section>
   )
