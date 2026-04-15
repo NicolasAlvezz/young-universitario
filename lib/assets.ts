@@ -1,7 +1,7 @@
 export const LOGOS = {
-  futbol: '/logo-futbol.png',
-  hockey: '/logo-hockey.png',
-  basquet: '/logo-basquet.png',
+  futbol: '/futbol-americano.png',
+  hockey: '/hockey-sobre-hierba.png',
+  basquet: '/juego-de-basquetbol.png',
 } as const
 
 /**
@@ -13,4 +13,3 @@ export const LOGOS_FALLBACK = {
   hockey: '/hockey.png',
   basquet: '/basquetbol-logo.svg',
 } as const
-

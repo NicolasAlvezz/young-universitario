@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import SafeLogo from '@/components/young/SafeLogo'
 import { LOGOS, LOGOS_FALLBACK } from '@/lib/assets'
 
 const sports = [
@@ -28,8 +29,16 @@ export default function SportsGrid() {
               <div className="p-6 flex flex-col flex-1">
                 <span className="text-club-red text-xs font-bold uppercase tracking-widest mb-4">{sport.label}</span>
 
-                {/* Logo removido por pedido (evita imágenes rotas) */}
-                <div className="mb-5 flex items-center h-12" />
+                <div className="mb-5 flex items-center h-12">
+                  <SafeLogo
+                    src={sport.img}
+                    fallbackSrc={sport.fallbackImg}
+                    alt={sport.title}
+                    width={48}
+                    height={48}
+                    className="object-contain w-12 h-12 opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
+                  />
+                </div>
 
                 <h3 className="heading-sm text-white mb-3 group-hover:text-club-red transition-colors duration-300">{sport.title}</h3>
                 <p className="text-club-muted text-sm leading-relaxed flex-1">{sport.description}</p>
