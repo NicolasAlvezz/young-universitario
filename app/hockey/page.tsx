@@ -2,6 +2,7 @@ import Header from '@/components/young/Header'
 import Footer from '@/components/young/Footer'
 import Link from 'next/link'
 import StandingsTable from '@/components/young/StandingsTable'
+import { GoleadorasSection, PlantelCompletoSection } from '@/components/young/PlantelStats'
 
 export const metadata = { title: 'Hockey | Young Universitario' }
 
@@ -176,66 +177,11 @@ export default function HockeyPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Main content */}
             <div className="lg:col-span-2 space-y-12">
-              {/* Goleadoras */}
-              <div>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-1 h-8 bg-club-red rounded" />
-                  <h2 className="heading-sm text-white">Goleadoras</h2>
-                </div>
-                <div className="space-y-3">
-                  {players.filter(p => p.goals > 0).sort((a, b) => b.goals - a.goals).map((p, i) => (
-                    <div key={p.name} className="bg-club-dark border border-club-gray-mid rounded p-4 flex items-center justify-between hover:border-club-red transition-colors">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded flex items-center justify-center font-black text-sm flex-shrink-0 ${i === 0 ? 'bg-club-red text-white' : 'bg-club-gray text-club-red'}`}>
-                          {i + 1}°
-                        </div>
-                        <div>
-                          <p className="text-white font-semibold text-sm">{p.name}</p>
-                          <p className="text-club-muted text-xs">{p.matches} {p.matches === 1 ? 'partido' : 'partidos'}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-club-red font-black text-2xl">{p.goals}</span>
-                        <p className="text-club-muted text-xs uppercase tracking-wide">{p.goals === 1 ? 'gol' : 'goles'}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* Goleadoras (Supabase) */}
+              <GoleadorasSection limite={5} />
 
-              {/* Plantel completo */}
-              <div>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-1 h-8 bg-club-red rounded" />
-                  <h2 className="heading-sm text-white">Plantel Completo</h2>
-                  <span className="text-club-muted text-xs uppercase tracking-widest ml-auto">Estadísticas — 2 fechas</span>
-                </div>
-
-                {/* Table header */}
-                <div className="hidden sm:grid grid-cols-12 gap-2 px-4 py-3 text-club-muted text-xs uppercase tracking-widest font-semibold border-b border-club-gray-mid mb-2">
-                  <div className="col-span-6">Jugadora</div>
-                  <div className="col-span-3 text-center">PJ</div>
-                  <div className="col-span-3 text-center">Goles</div>
-                </div>
-
-                <div className="space-y-1.5">
-                  {players.map((p) => (
-                    <div key={p.name} className="grid grid-cols-12 gap-2 bg-club-dark border border-club-gray-mid rounded px-4 py-3 items-center hover:border-club-red/50 transition-colors">
-                      <div className="col-span-6 sm:col-span-6">
-                        <p className="text-white font-medium text-sm truncate">{p.name}</p>
-                      </div>
-                      <div className="col-span-3 sm:col-span-3 text-center">
-                        <span className="text-white font-semibold text-sm">{p.matches}</span>
-                        <span className="sm:hidden text-club-muted text-xs ml-1">PJ</span>
-                      </div>
-                      <div className="col-span-3 sm:col-span-3 text-center">
-                        <span className={`font-bold text-sm ${p.goals > 0 ? 'text-club-red' : 'text-club-muted'}`}>{p.goals}</span>
-                        <span className="sm:hidden text-club-muted text-xs ml-1">G</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* Plantel completo (Supabase) */}
+              <PlantelCompletoSection />
             </div>
 
             {/* Sidebar */}
