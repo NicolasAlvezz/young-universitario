@@ -3,13 +3,13 @@ import Image from 'next/image'
 
 const sports = [
   { id: 'futbol-mayores', title: 'Primera División', category: 'Fútbol', href: '/futbol/mayores', description: 'Nuestro equipo principal compite en la división mayor. Garra, técnica y corazón en cada partido.', label: 'Mayores',
-    img: '/futbol.png' },
+    img: '/logo-futbol.png' },
   { id: 'futbol-reserva', title: 'Reserva', category: 'Fútbol', href: '/futbol/reserva', description: 'El semillero del club. Jóvenes talentos que dan todo para llegar a la primera.', label: 'Reserva',
-    img: '/futbol.png' },
+    img: '/logo-futbol.png' },
   { id: 'hockey', title: 'Hockey', category: 'Hockey', href: '/hockey', description: 'Velocidad, precisión y trabajo en equipo. Hockey sobre césped con toda la intensidad.', label: 'Hockey',
-    img: null },
+    img: '/logo-hockey.png' },
   { id: 'basquetbol', title: 'Básquetbol', category: 'Básquetbol', href: '/basquetbol', description: 'Altura, agilidad y determinación. El básquet del club vive en cada cancha.', label: 'Básquetbol',
-    img: '/basquetbol-logo.svg' },
+    img: '/logo-basquet.png' },
 ]
 
 export default function SportsGrid() {

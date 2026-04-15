@@ -131,7 +131,7 @@ export default function BasquetbolPage() {
         <div className="container-yu relative text-center">
           <div className="flex justify-center mb-8 opacity-80">
             <Image
-              src="/basquetbol-logo.svg"
+              src="/logo-basquet.png"
               alt="Básquetbol"
               width={80}
               height={80}
