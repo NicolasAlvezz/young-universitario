@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+import SafeLogo from '@/components/young/SafeLogo'
 import Header from '@/components/young/Header'
 import Footer from '@/components/young/Footer'
 import Link from 'next/link'
@@ -12,6 +12,7 @@ import {
   getPlayerScoring,
   getUniqueJornadasSorted,
 } from '@/lib/basquet-stats-store'
+import { LOGOS, LOGOS_FALLBACK } from '@/lib/assets'
 
 /** Datos en memoria vía POST; no puede ser estática en build. */
 export const dynamic = 'force-dynamic'
@@ -130,8 +131,9 @@ export default function BasquetbolPage() {
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-club-red opacity-10 blur-3xl rounded-full" />
         <div className="container-yu relative text-center">
           <div className="flex justify-center mb-8 opacity-80">
-            <Image
-              src="/logo-basquet.png"
+            <SafeLogo
+              src={LOGOS.basquet}
+              fallbackSrc={LOGOS_FALLBACK.basquet}
               alt="Básquetbol"
               width={80}
               height={80}

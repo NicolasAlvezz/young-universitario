@@ -1,15 +1,16 @@
 import Link from 'next/link'
-import Image from 'next/image'
+import SafeLogo from '@/components/young/SafeLogo'
+import { LOGOS, LOGOS_FALLBACK } from '@/lib/assets'
 
 const sports = [
   { id: 'futbol-mayores', title: 'Primera División', category: 'Fútbol', href: '/futbol/mayores', description: 'Nuestro equipo principal compite en la división mayor. Garra, técnica y corazón en cada partido.', label: 'Mayores',
-    img: '/logo-futbol.png' },
+    img: LOGOS.futbol, fallbackImg: LOGOS_FALLBACK.futbol },
   { id: 'futbol-reserva', title: 'Reserva', category: 'Fútbol', href: '/futbol/reserva', description: 'El semillero del club. Jóvenes talentos que dan todo para llegar a la primera.', label: 'Reserva',
-    img: '/logo-futbol.png' },
+    img: LOGOS.futbol, fallbackImg: LOGOS_FALLBACK.futbol },
   { id: 'hockey', title: 'Hockey', category: 'Hockey', href: '/hockey', description: 'Velocidad, precisión y trabajo en equipo. Hockey sobre césped con toda la intensidad.', label: 'Hockey',
-    img: '/logo-hockey.png' },
+    img: LOGOS.hockey, fallbackImg: LOGOS_FALLBACK.hockey },
   { id: 'basquetbol', title: 'Básquetbol', category: 'Básquetbol', href: '/basquetbol', description: 'Altura, agilidad y determinación. El básquet del club vive en cada cancha.', label: 'Básquetbol',
-    img: '/logo-basquet.png' },
+    img: LOGOS.basquet, fallbackImg: LOGOS_FALLBACK.basquet },
 ]
 
 export default function SportsGrid() {
@@ -29,7 +30,14 @@ export default function SportsGrid() {
                 <span className="text-club-red text-xs font-bold uppercase tracking-widest mb-4">{sport.label}</span>
                 <div className="mb-5 flex items-center h-12">
                   {sport.img ? (
-                    <Image src={sport.img} alt={sport.title} width={48} height={48} className="object-contain w-12 h-12 group-hover:scale-110 transition-transform duration-300" />
+                    <SafeLogo
+                      src={sport.img}
+                      fallbackSrc={sport.fallbackImg}
+                      alt={sport.title}
+                      width={48}
+                      height={48}
+                      className="object-contain w-12 h-12 group-hover:scale-110 transition-transform duration-300"
+                    />
                   ) : null}
                 </div>
                 <h3 className="heading-sm text-white mb-3 group-hover:text-club-red transition-colors duration-300">{sport.title}</h3>

@@ -3,7 +3,8 @@ import Footer from '@/components/young/Footer'
 import Link from 'next/link'
 import StandingsTable from '@/components/young/StandingsTable'
 import { GoleadorasSection, PlantelCompletoSection } from '@/components/young/PlantelStats'
-import Image from 'next/image'
+import SafeLogo from '@/components/young/SafeLogo'
+import { LOGOS, LOGOS_FALLBACK } from '@/lib/assets'
 
 export const metadata = { title: 'Hockey | Young Universitario' }
 
@@ -76,8 +77,9 @@ export default function HockeyPage() {
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-club-red opacity-10 blur-3xl rounded-full" />
         <div className="container-yu relative text-center">
           <div className="flex justify-center mb-8 opacity-80">
-            <Image
-              src="/logo-hockey.png"
+            <SafeLogo
+              src={LOGOS.hockey}
+              fallbackSrc={LOGOS_FALLBACK.hockey}
               alt="Hockey"
               width={80}
               height={80}
